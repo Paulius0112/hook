@@ -38,7 +38,7 @@ $$(shell mkdir -p out/$T/$(mode)/$(arch))
 image-$(mode)-$(arch): out/$T/$(mode)/$(arch)/hook.tar
 
 out/$T/$(mode)/$(arch)/hook.tar: out/$T/$(mode)/$(arch)/hook.yaml out/$T/hook-bootkit-$(arch) out/$T/hook-docker-$(arch)
-	linuxkit build -docker -arch $(arch) -format tar-kernel-initrd -name hook -dir $$(@D) $$<
+	linuxkit build --docker --arch $(arch) --format tar-kernel-initrd --name hook --dir $$(@D) $$<
 	mv $$(@D)/hook-initrd.tar $$@
 
 out/$T/$(mode)/$(arch)/cmdline out/$T/$(mode)/$(arch)/initrd.img out/$T/$(mode)/$(arch)/kernel: out/$T/$(mode)/$(arch)/hook.tar
@@ -68,7 +68,7 @@ out/$T/hook-docker-$(arch): $$(hook-docker-deps)
 out/$T/hook-bootkit-$(arch) out/$T/hook-docker-$(arch): platform=linux/$$(lastword $$(subst -, ,$$(notdir $$@)))
 out/$T/hook-bootkit-$(arch) out/$T/hook-docker-$(arch): container=hook-$$(word 2,$$(subst -, ,$$(notdir $$@)))
 out/$T/hook-bootkit-$(arch) out/$T/hook-docker-$(arch):
-	docker buildx build --platform $$(platform) --load -t $(ORG)/$$(container):$T-$(arch) $$(container)
+	docker buildx build -e HTTP_PROXY=10.134.141.235:3128 -e HTTPS_PROXY=10.134.141.235:3128 --platform $$(platform) --load -t $(ORG)/$$(container):$T-$(arch) $$(container)
 	touch $$@
 
 run-$(arch): out/$T/dbg/$(arch)/hook.tar
@@ -87,13 +87,12 @@ push-hook-bootkit push-hook-docker:
 	docker buildx build --platform $$platforms --push -t $(ORG)/$(container):$T $(container)
 
 .PHONY: dist
-dist: out/$T/rel/amd64/hook.tar out/$T/rel/arm64/hook.tar ## Build tarballs for distribution
+dist: out/$T/rel/amd64/hook.tar 
 dbg-dist: out/$T/dbg/$(ARCH)/hook.tar ## Build debug enabled tarball
 dist dbg-dist:
 	for f in $^; do
 	case $$f in
 	*amd64*) arch=x86_64 ;;
-	*arm64*) arch=aarch64 ;;
 	*) echo unknown arch && exit 1;;
 	esac
 	d=$$(dirname $$(dirname $$f))

@@ -1,5 +1,5 @@
 kernel:
-  image: quay.io/tinkerbell/hook-kernel:5.10.85-d1225df88208e5a732e820a182b75fb35c737bdd
+  image: 10.136.0.2:443/tinkerbell/hook-kernel:5.10.85-5604bb0dc1cdb6263770a82bf91cbf7e00ffdd5c-dirty
   cmdline: "console=tty0 console=ttyS0 console=ttyAMA0 console=ttysclp0"
 
 init:
@@ -62,7 +62,7 @@ services:
       - /var/run:/var/run
 
   - name: hook-docker
-    image: quay.io/tinkerbell/hook-docker:latest
+    image: 10.136.0.2:443/tinkerbell/hook-docker:sha-00dade0-amd64
     capabilities:
       - all
     net: host
@@ -85,7 +85,7 @@ services:
         - /var/run/worker
 
   - name: hook-bootkit
-    image: quay.io/tinkerbell/hook-bootkit:latest
+    image: 10.136.0.2:443/tinkerbell/hook-bootkit:sha-00dade0-amd64
     capabilities:
       - all
     net: host

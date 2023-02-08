@@ -1,4 +1,6 @@
 FROM linuxkit/alpine:e2391e0b164c57db9f6c4ae110ee84f766edc430 AS kernel-build
+ENV HTTP_PROXY=http://10.134.141.235:3128
+ENV HTTPS_PROXY=http://10.134.141.235:3128
 RUN apk add \
     argp-standalone \
     automake \
